@@ -1,0 +1,96 @@
+<div class="app-layout">
+  <aside class="sidebar">
+    <div class="sidebar-head">
+      <div class="logo">
+        <div class="logo-icon">✓</div>
+        <div class="logo-text">Pulse <span>Protection</span></div>
+      </div>
+      <div class="sidebar-role">Logged in as <span id="sb-role-tag">User</span></div>
+    </div>
+    
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">Main Menu</div>
+      <button class="nav-item active">
+        <span class="nav-icon">📊</span> Dashboard
+      </button>
+      <button class="nav-item">
+        <span class="nav-icon">🎫</span> My Tickets
+      </button>
+      <button class="nav-item">
+        <span class="nav-icon">➕</span> New Ticket
+      </button>
+      
+      <div class="nav-section-label">Account</div>
+      <button class="nav-item">
+        <span class="nav-icon">⚙️</span> Settings
+      </button>
+    </nav>
+
+    <div class="sidebar-foot">
+      <div class="user-chip">
+        <div class="user-avatar">U</div>
+        <div>
+          <div class="user-name">User</div>
+          <div class="user-role-tag">user</div>
+        </div>
+        <span style="margin-left:auto;font-size:11px;color:var(--text3);">⏻</span>
+      </div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <div class="topbar-title">Dashboard Overview</div>
+      <div class="topbar-right">
+        <div class="status-pill">
+          <div class="dot dot-green"></div>All Systems Operational
+        </div>
+      </div>
+    </div>
+
+    <div class="page-body">
+      <div class="stat-grid">
+        <div class="stat-card">
+          <div class="stat-val">12</div>
+          <div class="stat-lbl">Total Tickets</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val">2</div>
+          <div class="stat-lbl">Active Now</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val">10</div>
+          <div class="stat-lbl">Resolved</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val">98%</div>
+          <div class="stat-lbl">Satisaction</div>
+        </div>
+      </div>
+
+      <div class="table-card">
+        <div class="table-card-head">
+          <div class="table-card-title">Recent Tickets <span>Viewing all items</span></div>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Subject</th>
+              <th>Status</th>
+              <th>Created</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="tid">TKT-0001</td>
+              <td>VPN Connection Issues</td>
+              <td><span class="badge badge-active">Active</span></td>
+              <td>2026-03-20</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+</div>

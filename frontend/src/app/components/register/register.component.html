@@ -1,0 +1,93 @@
+<div id="v-register" class="view active">
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:0 40px;height:60px;border-bottom:1px solid var(--border);background:rgba(10,13,20,.85);backdrop-filter:blur(12px);position:relative;z-index:1;">
+    <div class="logo"><div class="logo-icon">✓</div><div class="logo-text">Pulse <span>Protection</span></div></div>
+    <div style="font-size:13px;color:var(--text2);">Have an account? <a routerLink="/login" style="color:var(--accent);cursor:pointer;font-weight:600;text-decoration:none;">Sign in</a></div>
+  </div>
+
+  <div class="auth-screen" style="padding:30px 20px;">
+    <div class="auth-card wide">
+      <div class="auth-head">
+        <h2>Create Account</h2>
+        <p>Join the Pulse Protection IT platform</p>
+      </div>
+      <div class="auth-body">
+        
+        <div class="fg">
+          <label>Account Type</label>
+          <div class="role-cards">
+            <div class="role-card" [class.selected]="role === 'user'" (click)="role = 'user'">
+              <div class="role-icon">👤</div>
+              <div class="role-name">User</div>
+              <div class="role-desc">Submit tickets</div>
+            </div>
+            <div class="role-card" [class.selected]="role === 'it'" (click)="role = 'it'">
+              <div class="role-icon">🔧</div>
+              <div class="role-name">IT Assistant</div>
+              <div class="role-desc">Resolve tickets</div>
+            </div>
+            <div class="role-card" [class.selected]="role === 'admin'" (click)="role = 'admin'">
+              <div class="role-icon">🛡️</div>
+              <div class="role-name">Admin</div>
+              <div class="role-desc">Full access</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="fg-row">
+          <div class="fg">
+            <label>Username</label>
+            <input type="text" placeholder="john_doe"/>
+          </div>
+          <div class="fg">
+            <label>Email</label>
+            <input type="email" placeholder="you@company.com"/>
+          </div>
+        </div>
+
+        <div class="fg-row">
+          <div class="fg">
+            <label>Department</label>
+            <select>
+              <option value="" disabled selected>Select dept…</option>
+              <option>Engineering</option>
+              <option>Finance</option>
+              <option>HR</option>
+              <option>Marketing</option>
+              <option>IT</option>
+            </select>
+          </div>
+        </div>
+
+        <div *ngIf="role === 'user'" id="hw-specs-section">
+          <div class="divider"><span>HARDWARE SPECIFICATIONS</span></div>
+          <div class="hw-section">
+            <div class="hw-section-title">💻 Your Device Info</div>
+            <div class="fg-row">
+              <div class="fg">
+                <label>Device Brand</label>
+                <select>
+                  <option>Dell</option>
+                  <option>HP</option>
+                  <option>Apple</option>
+                </select>
+              </div>
+              <div class="fg">
+                <label>Device Model</label>
+                <input type="text" placeholder="e.g. Latitude 5540"/>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="divider"><span>SECURITY</span></div>
+        <div class="fg">
+          <label>Password</label>
+          <input type="password" placeholder="Create password"/>
+        </div>
+
+        <button class="btn btn-primary btn-block" (click)="onRegister()">Create Account →</button>
+      </div>
+      <div class="auth-foot">Already have an account? <a routerLink="/login">Sign in</a></div>
+    </div>
+  </div>
+</div>

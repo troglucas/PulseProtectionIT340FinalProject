@@ -1,0 +1,40 @@
+<div id="v-login" class="view active">
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:0 40px;height:60px;border-bottom:1px solid var(--border);background:rgba(10,13,20,.85);backdrop-filter:blur(12px);position:relative;z-index:1;">
+    <div class="logo"><div class="logo-icon">✓</div><div class="logo-text">Pulse <span>Protection</span></div></div>
+    <div style="font-size:13px;color:var(--text2);">No account? <a routerLink="/register" style="color:var(--accent);cursor:pointer;font-weight:600;text-decoration:none;">Register here</a></div>
+  </div>
+
+  <div class="auth-screen">
+    <div class="auth-card">
+      <div class="auth-head">
+        <h2>Sign In</h2>
+        <p>Access your Pulse Protection workspace</p>
+      </div>
+      <div class="auth-body">
+        <div class="fg">
+          <label>Username</label>
+          <input type="text" [(ngModel)]="username" placeholder="Enter your username"/>
+        </div>
+
+        <div class="fg">
+          <label>Password</label>
+          <div class="pass-wrap">
+            <input type="password" [(ngModel)]="password" placeholder="Enter your password"/>
+          </div>
+        </div>
+
+        <button class="btn btn-primary btn-block" (click)="onLogin()">Sign In</button>
+
+        <div class="divider" style="margin-top:20px;"><span>DEMO ACCOUNTS</span></div>
+        <div style="background:var(--bg3);border:1px solid var(--border);border-radius:9px;padding:12px 14px;">
+          <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text2);line-height:2;">
+            <div>👤 <strong style="color:var(--text);">user1</strong> / pass123 — <span style="color:var(--text3);">User</span></div>
+            <div>🔧 <strong style="color:var(--text);">it1</strong> / pass123 — <span style="color:var(--text3);">IT Assistant</span></div>
+            <div>🛡️ <strong style="color:var(--text);">admin</strong> / pass123 — <span style="color:var(--text3);">Admin</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="auth-foot">Don't have an account? <a routerLink="/register">Register here</a></div>
+    </div>
+  </div>
+</div>
