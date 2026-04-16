@@ -46,3 +46,27 @@ async function loginUser(username, password) {
 
   return { message: "Login successful", user: user.username };
 }
+
+// actually enters here
+app.post("/auth", async (req, res) => {
+  //unpacks it from the frontend
+  const { action, username, password, email, dob } = req.body;
+
+  try {
+    // these call the functions above for login or registeration
+    if (action === "register") {
+      const result = await registerUser({ username, email, dob, password });
+      return res.status(201).json(result); //any error in the function will be sent to the FRONTEND
+    }
+
+    if (action === "login") {
+      const result = await loginUser(username, password);
+      return res.status(200).json(result); //any error in the function will be sent to the FRONTEND
+    }
+
+    res.status(400).json({ error: "Action must be 'login' or 'register'" });
+  } catch (error) {
+    // Sends the "throw new Error" message back to your frontend
+    res.status(400).json({ error: error.message });
+  }
+});
