@@ -70,3 +70,27 @@ app.post("/auth", async (req, res) => {
     res.status(400).json({ error: error.message });
   }
 });
+
+// connecting to MangoDB server
+
+const REMOTE_IP = ""; // insert ip of DB VM here
+const DB_NAME = ""; //insert db name here
+const connectionString = `mongodb://${REMOTE_IP}:27017/${DB_NAME}`;
+
+mongoose
+  .connect(connectionString)
+  .then(() => {
+    console.log("--- Database Connection Established ---");
+    console.log(`Connected to: ${REMOTE_IP}`);
+
+    // Start the server only after the DB is connected
+    app.listen(3000, () => {
+      // ask what port to put here
+      console.log("Server is running on port 3000");
+    });
+  })
+  .catch((err) => {
+    console.error("--- Connection Failed! ---");
+    console.error("Check if the remote machine is on and port 27017 is open.");
+    console.error("Error Details:", err.message);
+  });
