@@ -1,26 +1,19 @@
-const express = require('express');
-const mongoose = require('mongoose'); /*MangoDB server*/
+const express = require("express");
+const mongoose = require("mongoose"); /*MangoDB server*/
+
 const app = express();
 
-
-
+app.use(express.json()); /* To read what is sent from FRONTEND */
 
 /* For the MangoDB server*/
 
+const userSchema = new mongoose.Schema({
+  username: { type: String, required: true, unique: true },
+  email: { type: String, required: true, unique: true },
+  dob: { type: String, required: true },
+  password: { type: String, required: true }, // Hashed from frontend
+});
 
-const DB_IP = 'ip add here '; 
-const DB_NAME = 'dp name';
+function LOGIN(req, res) {}
 
-mongoose.connect(`mongodb://${DB_IP}:27017/${DB_NAME}`)
-  .then(() => console.log('Connected to Database VM successfully'))
-  .catch(err => console.error('Database connection failed:', err));
-
-
-app.get('/', (req, res) => { 
-       res.send('Hello World from MEAN Stack!');
-    }); 
-
-app.listen(port, () => { 
-       console.log(`Server running on port ${port}`);
-    });
-
+function REGISTER(req, res) {}
