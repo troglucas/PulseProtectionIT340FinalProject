@@ -36,7 +36,7 @@
         <div class="fg-row">
           <div class="fg">
             <label>Username</label>
-            <input type="text" placeholder="john_doe"/>
+            <input type="text" [(ngModel)]="username" name="username" placeholder="john_doe"/>
           </div>
           <div class="fg">
             <label>Email</label>
@@ -82,7 +82,7 @@
         <div class="divider"><span>SECURITY</span></div>
         <div class="fg">
           <label>Password</label>
-          <input type="password" placeholder="Create password"/>
+          <input type="password" [(ngModel)]="password" name="password" placeholder="Create password"/>
         </div>
 
         <button class="btn btn-primary btn-block" (click)="onRegister()">Create Account →</button>
