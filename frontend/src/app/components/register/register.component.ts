@@ -32,14 +32,15 @@ export class RegisterComponent {
     this.isLoading = true;
 
     // Basic client-side check
-    if (!this.username || !this.password) {
-      this.errorMessage = 'Please enter both username and password.';
-      this.isLoading = false;
-      return;
+    if (!this.username || !this.email || !this.dob || !this.password) {
+  this.errorMessage = "Please fill in username, email, date of birth, and password.";
+  this.isLoading = false;
+  return;
+}
     }
 
     // Call the backend to create the account
-    this.authService.register(this.username, this.password).subscribe({
+   this.authService.register(this.username, this.email, this.dob, this.password).subscribe({
       next: (response) => {
         console.log('Registration successful:', response);
         this.isLoading = false;
