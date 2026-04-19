@@ -8,10 +8,12 @@ import { AuthService } from '../../services/auth.service';
   selector: 'app-register',
   standalone: true,
   imports: [CommonModule, FormsModule, RouterModule],
-  templateUrl: './register.component.html'
+  templateUrl: './register.component.html',
 })
 export class RegisterComponent {
   username = '';
+  email = '';
+  dob = '';
   password = '';
   errorMessage = '';
   successMessage = '';
@@ -22,7 +24,7 @@ export class RegisterComponent {
 
   constructor(
     private router: Router,
-    private authService: AuthService
+    private authService: AuthService,
   ) {}
 
   onRegister() {
@@ -33,14 +35,13 @@ export class RegisterComponent {
 
     // Basic client-side check
     if (!this.username || !this.email || !this.dob || !this.password) {
-  this.errorMessage = "Please fill in username, email, date of birth, and password.";
-  this.isLoading = false;
-  return;
-}
+      this.errorMessage = 'Please fill in username, email, date of birth, and password.';
+      this.isLoading = false;
+      return;
     }
 
     // Call the backend to create the account
-   this.authService.register(this.username, this.email, this.dob, this.password).subscribe({
+    this.authService.register(this.username, this.email, this.dob, this.password).subscribe({
       next: (response) => {
         console.log('Registration successful:', response);
         this.isLoading = false;
@@ -55,7 +56,7 @@ export class RegisterComponent {
         console.error('Registration failed:', err);
         this.isLoading = false;
         this.errorMessage = 'Could not create account. The username may already be taken.';
-      }
+      },
     });
   }
 }
