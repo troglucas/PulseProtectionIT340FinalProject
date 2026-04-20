@@ -1,0 +1,64 @@
+Step 1: Install MongoDB (Ubuntu 24.04/22.04)
+
+Since default Ubuntu repositories often lack the latest MongoDB version, we add the official source.
+
+    Import GPG Key: curl -fsSL https://www.mongodb.org/static/pgp/server-7.0.asc | sudo gpg -o /usr/share/keyrings/mongodb-server-7.0.gpg --dearmor
+
+    Add Repository: echo "deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-7.0.gpg ] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/7.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-7.0.list
+
+    Install: sudo apt update && sudo apt install -y mongodb-org
+
+    Start Service: sudo systemctl start mongod && sudo systemctl enable mongod
+
+Step 2: Network Configuration (VLAN Setup)
+
+By default, MongoDB only listens to itself (localhost). We must tell it to listen for the Backend VM’s internal IP.
+
+    Open Config: sudo nano /etc/mongod.conf
+
+    Modify Network Interfaces: Find the net: section and change the bindIp.
+
+        Change: bindIp: 127.0.0.1
+
+        To: bindIp: 0.0.0.0 (This allows the DB to listen on its VLAN interface).
+
+    Restart Service: sudo systemctl restart mongod
+
+Step 3: Security Hardening (UFW & Auth)
+
+To meet "Basic Security" requirements, we lock the DB so ONLY the Backend VM can talk to it.
+
+    Configure Firewall (UFW):
+
+        sudo ufw default deny incoming
+
+        sudo ufw allow ssh (Crucial to stay connected)
+
+        sudo ufw allow from 10.0.2.5 to any port 27017 (Replace 10.0.2.5 with your actual BE VM IP).
+
+        sudo ufw enable
+
+    Enable MongoDB Auth: Re-open sudo nano /etc/mongod.conf, find the security: section, and add:
+    YAML
+
+    security:
+      authorization: enabled
+
+    Restart Service: sudo systemctl restart mongod
+
+Step 4: Create Application User
+
+Your Backend (server.js) needs a username and password to log in.
+
+    Enter Mongo Shell: Type mongosh.
+
+    Switch to Admin: use admin
+
+    Create the Admin/User:
+    JavaScript
+
+db.createUser({
+  user: "dbadmin",
+  pwd: "password123",
+  roles: [ { role: "readWrite", db: "pulse" } ]
+})
