@@ -8,7 +8,7 @@ import { AuthService } from '../../services/auth.service';
   selector: 'app-login',
   standalone: true,
   imports: [CommonModule, FormsModule, RouterModule],
-  templateUrl: './login.component.html'
+  templateUrl: './login.component.html',
 })
 export class LoginComponent {
   username = '';
@@ -18,8 +18,13 @@ export class LoginComponent {
 
   constructor(
     private router: Router,
-    private authService: AuthService
+    private authService: AuthService,
   ) {}
+
+  // checks username is valid and not empty or sql injection
+  private isValidUsername(username: string): boolean {
+    return /^[A-Za-z0-9_]{3,30}$/.test(username);
+  }
 
   onLogin() {
     // Clear any previous error and show a loading state
@@ -28,8 +33,8 @@ export class LoginComponent {
 
     // Basic client-side check — don't even bother hitting the server
     // if the user hasn't filled in both fields
-    if (!this.username || !this.password) {
-      this.errorMessage = 'Please enter both username and password.';
+    if (!this.isValidUsername(this.username) || !this.password || this.password.length > 128) {
+      this.errorMessage = 'Invalid username or password format';
       this.isLoading = false;
       return;
     }
@@ -47,7 +52,7 @@ export class LoginComponent {
         console.error('Login failed:', err);
         this.isLoading = false;
         this.errorMessage = 'Invalid username or password.';
-      }
+      },
     });
   }
 }
