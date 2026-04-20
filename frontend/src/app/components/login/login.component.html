@@ -16,6 +16,14 @@
           <input type="text" [(ngModel)]="username" placeholder="Enter your username"/>
         </div>
 
+	<button class="btn btn-primary btn-block" (click)="onLogin()" [disabled]="isLoading">
+  	{{ isLoading ? 'Signing In...' : 'Sign In' }}
+	</button>
+
+	<div *ngIf="errorMessage" style="margin-top:10px;color:#ff6b6b;font-size:13px;">
+	  {{ errorMessage }}
+	</div>
+
         <div class="fg">
           <label>Password</label>
           <div class="pass-wrap">
