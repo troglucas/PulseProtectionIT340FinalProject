@@ -2,9 +2,27 @@ const express = require("express");
 const mongoose = require("mongoose"); /*MangoDB server*/
 const cors = require("cors"); /* To allow communication between the frontend and backend servers */
 
-const FRONTEND_ORIGIN = "http://10.0.2.6:4200"; // frontend VM IP
-app.use(cors({ origin: FRONTEND_ORIGIN }));
 const app = express();
+
+
+// checks the cors is working
+const allowedOrigins = [
+"http://10.0.2.6:4200",
+"http://localhost:4200",
+"http://127.0.0.1:4200",
+];
+
+app.use(
+cors({
+origin: (origin, callback) => {
+if (!origin || allowedOrigins.includes(origin)) return callback(null, true);
+return callback(new Error("Not allowed by CORS"));
+},
+methods: ["GET", "POST", "OPTIONS"],
+allowedHeaders: ["Content-Type"],
+})
+);
+
 
 app.use(express.json()); /* To read what is sent from FRONTEND */
 
@@ -76,7 +94,7 @@ app.post(["/auth", "/api/auth"], async (req, res) => {
 
 // connecting to MangoDB server
 
-const REMOTE_IP = "10.0.2.3"; // insert ip of DB VM here
+const REMOTE_IP = "10.0.2.7"; // insert ip of DB VM here
 const DB_NAME = "pulse"; //insert db name here
 const connectionString = `mongodb://${REMOTE_IP}:27017/${DB_NAME}`;
 
