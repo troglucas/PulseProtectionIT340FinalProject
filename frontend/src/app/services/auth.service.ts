@@ -1,28 +1,40 @@
-import { Injectable } from '@angular/core';
+import { Injectable, PLATFORM_ID, Inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, tap } from 'rxjs';
+import { isPlatformBrowser } from '@angular/common';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
 
-  // Base URL of Joseph's backend server. Double check if it's the correct one!
   private apiUrl = 'http://localhost:3000/api/auth';
 
-  constructor(private http: HttpClient) { }
+  constructor(
+    private http: HttpClient,
+    @Inject(PLATFORM_ID) private platformId: Object
+  ) { }
 
-  // Sends a login request to the backend.
+  private isBrowser(): boolean {
+    return isPlatformBrowser(this.platformId);
+  }
+
   login(username: string, password: string): Observable<any> {
     const body = {
       username: username,
       password: password,
       'check/registering': 'check'
     };
-    return this.http.post(this.apiUrl, body);
+    return this.http.post(this.apiUrl, body).pipe(
+      tap((response: any) => {
+        if (this.isBrowser() && response && response.role) {
+          localStorage.setItem('role', response.role);
+          localStorage.setItem('username', username);
+        }
+      })
+    );
   }
 
-  // Sends a register request to the backend.
   register(username: string, password: string): Observable<any> {
     const body = {
       username: username,
@@ -30,5 +42,27 @@ export class AuthService {
       'check/registering': 'registering'
     };
     return this.http.post(this.apiUrl, body);
+  }
+
+  getRole(): string {
+    if (this.isBrowser()) return localStorage.getItem('role') || '';
+    return '';
+  }
+
+  getUsername(): string {
+    if (this.isBrowser()) return localStorage.getItem('username') || '';
+    return '';
+  }
+
+  isLoggedIn(): boolean {
+    if (this.isBrowser()) return !!localStorage.getItem('role');
+    return false;
+  }
+
+  logout(): void {
+    if (this.isBrowser()) {
+      localStorage.removeItem('role');
+      localStorage.removeItem('username');
+    }
   }
 }

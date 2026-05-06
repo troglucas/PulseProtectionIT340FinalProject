@@ -5,21 +5,50 @@
         <div class="logo-icon">✓</div>
         <div class="logo-text">Pulse <span>Protection</span></div>
       </div>
-      <div class="sidebar-role">Logged in as <span id="sb-role-tag">User</span></div>
+      <div class="sidebar-role">Logged in as <span>{{ role }}</span></div>
     </div>
-    
+
     <nav class="sidebar-nav">
       <div class="nav-section-label">Main Menu</div>
+
+      <!-- Shown to ALL roles -->
       <button class="nav-item active">
         <span class="nav-icon">📊</span> Dashboard
       </button>
-      <button class="nav-item">
-        <span class="nav-icon">🎫</span> My Tickets
-      </button>
-      <button class="nav-item">
-        <span class="nav-icon">➕</span> New Ticket
-      </button>
-      
+
+      <!-- User only -->
+      <ng-container *ngIf="isUser()">
+        <button class="nav-item">
+          <span class="nav-icon">🎫</span> My Tickets
+        </button>
+        <button class="nav-item">
+          <span class="nav-icon">➕</span> New Ticket
+        </button>
+      </ng-container>
+
+      <!-- IT Assistant only -->
+      <ng-container *ngIf="isITAssistant()">
+        <button class="nav-item">
+          <span class="nav-icon">📋</span> Ticket Queue
+        </button>
+        <button class="nav-item">
+          <span class="nav-icon">🎫</span> My Assigned Tickets
+        </button>
+      </ng-container>
+
+      <!-- Admin only -->
+      <ng-container *ngIf="isAdmin()">
+        <button class="nav-item">
+          <span class="nav-icon">👥</span> Manage Accounts
+        </button>
+        <button class="nav-item">
+          <span class="nav-icon">🎫</span> All Tickets
+        </button>
+        <button class="nav-item">
+          <span class="nav-icon">➕</span> Create IT Assistant
+        </button>
+      </ng-container>
+
       <div class="nav-section-label">Account</div>
       <button class="nav-item">
         <span class="nav-icon">⚙️</span> Settings
@@ -28,12 +57,12 @@
 
     <div class="sidebar-foot">
       <div class="user-chip">
-        <div class="user-avatar">U</div>
+        <div class="user-avatar">{{ username.charAt(0).toUpperCase() }}</div>
         <div>
-          <div class="user-name">User</div>
-          <div class="user-role-tag">user</div>
+          <div class="user-name">{{ username }}</div>
+          <div class="user-role-tag">{{ role }}</div>
         </div>
-        <span style="margin-left:auto;font-size:11px;color:var(--text3);">⏻</span>
+        <button (click)="logout()" style="margin-left:auto;font-size:11px;background:none;border:none;cursor:pointer;color:var(--text3);">⏻</button>
       </div>
     </div>
   </aside>
@@ -64,7 +93,7 @@
         </div>
         <div class="stat-card">
           <div class="stat-val">98%</div>
-          <div class="stat-lbl">Satisaction</div>
+          <div class="stat-lbl">Satisfaction</div>
         </div>
       </div>
 
