@@ -1,7 +1,28 @@
 const express = require("express");
 const mongoose = require("mongoose"); /*MangoDB server*/
+const cors = require("cors"); /* To allow communication between the frontend and backend servers */
 
 const app = express();
+
+
+// checks the cors is working
+const allowedOrigins = [
+"http://10.0.2.6:4200",
+"http://localhost:4200",
+"http://127.0.0.1:4200",
+];
+
+app.use(
+cors({
+origin: (origin, callback) => {
+if (!origin || allowedOrigins.includes(origin)) return callback(null, true);
+return callback(new Error("Not allowed by CORS"));
+},
+methods: ["GET", "POST", "OPTIONS"],
+allowedHeaders: ["Content-Type"],
+})
+);
+
 
 app.use(express.json()); /* To read what is sent from FRONTEND */
 
@@ -48,7 +69,7 @@ async function loginUser(username, password) {
 }
 
 // actually enters here
-app.post("/auth", async (req, res) => {
+app.post(["/auth", "/api/auth"], async (req, res) => {
   //unpacks it from the frontend
   const { action, username, password, email, dob } = req.body;
 
@@ -73,8 +94,8 @@ app.post("/auth", async (req, res) => {
 
 // connecting to MangoDB server
 
-const REMOTE_IP = ""; // insert ip of DB VM here
-const DB_NAME = ""; //insert db name here
+const REMOTE_IP = "10.0.2.7"; // insert ip of DB VM here
+const DB_NAME = "pulse"; //insert db name here
 const connectionString = `mongodb://${REMOTE_IP}:27017/${DB_NAME}`;
 
 mongoose
@@ -84,9 +105,10 @@ mongoose
     console.log(`Connected to: ${REMOTE_IP}`);
 
     // Start the server only after the DB is connected
-    app.listen(3000, () => {
-      // ask what port to put here
-      console.log("Server is running on port 3000");
+    const PORT = 3000;
+    const HOST = "0.0.0.0";
+    app.listen(PORT, HOST, () => {
+      console.log("Server is running on http://10.0.2.5:" + PORT);
     });
   })
   .catch((err) => {
