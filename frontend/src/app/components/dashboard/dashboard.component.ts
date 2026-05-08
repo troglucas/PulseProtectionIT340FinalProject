@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-dashboard',
@@ -8,5 +9,10 @@ import { CommonModule } from '@angular/common';
   templateUrl: './dashboard.component.html'
 })
 export class DashboardComponent {
-  // Logic for your dashboard stats can go here later
+  constructor(private router: Router) {}
+
+  logout() {
+    sessionStorage.clear();
+    this.router.navigate(['/login']);
+  }
 }

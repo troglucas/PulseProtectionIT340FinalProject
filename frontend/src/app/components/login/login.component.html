@@ -16,9 +16,6 @@
           <input type="text" [(ngModel)]="username" placeholder="Enter your username"/>
         </div>
 
-	<button class="btn btn-primary btn-block" (click)="onLogin()" [disabled]="isLoading">
-  	{{ isLoading ? 'Signing In...' : 'Sign In' }}
-	</button>
 
 	<div *ngIf="errorMessage" style="margin-top:10px;color:#ff6b6b;font-size:13px;">
 	  {{ errorMessage }}
@@ -33,13 +30,7 @@
 
         <button class="btn btn-primary btn-block" (click)="onLogin()">Sign In</button>
 
-        <div class="divider" style="margin-top:20px;"><span>DEMO ACCOUNTS</span></div>
-        <div style="background:var(--bg3);border:1px solid var(--border);border-radius:9px;padding:12px 14px;">
-          <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text2);line-height:2;">
-            <div>👤 <strong style="color:var(--text);">user1</strong> / pass123 — <span style="color:var(--text3);">User</span></div>
-            <div>🔧 <strong style="color:var(--text);">it1</strong> / pass123 — <span style="color:var(--text3);">IT Assistant</span></div>
-            <div>🛡️ <strong style="color:var(--text);">admin</strong> / pass123 — <span style="color:var(--text3);">Admin</span></div>
-          </div>
+        
         </div>
       </div>
       <div class="auth-foot">Don't have an account? <a routerLink="/register">Register here</a></div>
