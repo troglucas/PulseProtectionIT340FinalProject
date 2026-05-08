@@ -1,0 +1,15 @@
+[2026-05-08T17:14:37.209Z] INFO: --- Database Connection Established ---
+[2026-05-08T17:14:37.219Z] INFO: Connected to MongoDB at: 10.0.2.7
+[2026-05-08T17:14:37.243Z] INFO: Server is running on http://10.0.2.5:3000
+[2026-05-08T17:19:20.804Z] INFO: Auth request received from frontend. Action: login, Username: rocket
+[2026-05-08T17:19:20.812Z] INFO: Sending login request to DB check. Username: rocket
+[2026-05-08T17:19:20.856Z] INFO: DB login check passed. Username: rocket
+[2026-05-08T17:19:20.857Z] INFO: Sending login success response to frontend. Username: rocket
+[2026-05-08T17:19:41.669Z] INFO: Auth request received from frontend. Action: login, Username: disasrer
+[2026-05-08T17:19:41.669Z] INFO: Sending login request to DB check. Username: disasrer
+[2026-05-08T17:19:41.675Z] ERROR: Auth failed. Action: login, Username: disasrer, Error: User not found
+[2026-05-08T17:19:41.676Z] INFO: Sending error response to frontend. Username: disasrer
+[2026-05-08T17:19:43.696Z] INFO: Auth request received from frontend. Action: login, Username: disasrer
+[2026-05-08T17:19:43.703Z] INFO: Sending login request to DB check. Username: disasrer
+[2026-05-08T17:19:43.721Z] ERROR: Auth failed. Action: login, Username: disasrer, Error: User not found
+[2026-05-08T17:19:43.723Z] INFO: Sending error response to frontend. Username: disasrer

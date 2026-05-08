@@ -11,6 +11,7 @@
   "description": "",
   "dependencies": {
     "cors": "^2.8.6",
+    "mongoose": "^9.6.1",
     "winston": "^3.19.0"
   }
 }
