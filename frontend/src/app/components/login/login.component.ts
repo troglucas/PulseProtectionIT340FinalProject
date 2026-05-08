@@ -44,6 +44,12 @@ export class LoginComponent {
       next: (response) => {
         // Backend returned a successful response — route to the dashboard
         console.log('Login successful:', response);
+
+        /*Starts a session 
+        Clears automatically when broswer tab or window is closed*/
+        sessionStorage.setItem('isLoggedIn', 'true');
+        sessionStorage.setItem('username', this.username);
+
         this.isLoading = false;
         this.router.navigate(['/dashboard']);
       },
