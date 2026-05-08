@@ -5,7 +5,7 @@
         <div class="logo-icon">✓</div>
         <div class="logo-text">Pulse <span>Protection</span></div>
       </div>
-      <div class="sidebar-role">Logged in as <span id="sb-role-tag">User</span></div>
+      <div class="sidebar-role">Logged in as <span id="sb-role-tag">{{ username }}</span></div>
     </div>
     
     <nav class="sidebar-nav">
@@ -28,9 +28,9 @@
 
     <div class="sidebar-foot">
       <button class="user-chip logout-button" type="button" (click)="logout()">
-        <div class="user-avatar">U</div>
+        <div class="user-avatar">{{ username.charAt(0).toUpperCase() }}</div>
         <div>
-          <div class="user-name">User</div>
+          <div class="user-name">{{ username }}</div>
           <div class="user-role-tag">user</div>
         </div>
         <span style="margin-left:auto;font-size:11px;color:var(--text3);">⏻</span>

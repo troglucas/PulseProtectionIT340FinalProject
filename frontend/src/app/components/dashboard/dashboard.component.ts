@@ -9,6 +9,8 @@ import { Router } from '@angular/router';
   templateUrl: './dashboard.component.html'
 })
 export class DashboardComponent {
+  username = sessionStorage.getItem('username') || 'User';
+
   constructor(private router: Router) {}
 
   logout() {
