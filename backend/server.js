@@ -1,28 +1,33 @@
 const express = require("express");
 const mongoose = require("mongoose"); /*MangoDB server*/
 const cors = require("cors"); /* To allow communication between the frontend and backend servers */
-
 const app = express();
 
+/*Used for logs*/
+const logger = require("./logger");
+/*info - noting something that happened
+warn -noting susicipous behavior like failed login attempts 
+error - something fail to work */
+/*Writes to central.log and outputs it live on console*/
 
 // checks the cors is working
 const allowedOrigins = [
-"http://10.0.2.6:4200",
-"http://localhost:4200",
-"http://127.0.0.1:4200",
+  "http://10.0.2.6:4200",
+  "http://localhost:4200",
+  "http://127.0.0.1:4200",
 ];
 
 app.use(
-cors({
-origin: (origin, callback) => {
-if (!origin || allowedOrigins.includes(origin)) return callback(null, true);
-return callback(new Error("Not allowed by CORS"));
-},
-methods: ["GET", "POST", "OPTIONS"],
-allowedHeaders: ["Content-Type"],
-})
+  cors({
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin))
+        return callback(null, true);
+      return callback(new Error("Not allowed by CORS"));
+    },
+    methods: ["GET", "POST", "OPTIONS"],
+    allowedHeaders: ["Content-Type"],
+  }),
 );
-
 
 app.use(express.json()); /* To read what is sent from FRONTEND */
 
@@ -73,21 +78,49 @@ app.post(["/auth", "/api/auth"], async (req, res) => {
   //unpacks it from the frontend
   const { action, username, password, email, dob } = req.body;
 
+  logger.info(
+    `Auth request received from frontend. Action: ${action}, Username: ${username}`,
+  );
+
   try {
     // these call the functions above for login or registeration
     if (action === "register") {
+      logger.info(
+        `Sending register request to DB check. Username: ${username}, Email: ${email}`,
+      );
       const result = await registerUser({ username, email, dob, password });
+
+      logger.info(`DB register check passed. User registered: ${username}`);
+      logger.info(
+        `Sending register success response to frontend. Username: ${username}`,
+      );
+
       return res.status(201).json(result); //any error in the function will be sent to the FRONTEND
     }
 
     if (action === "login") {
+      logger.info(`Sending login request to DB check. Username: ${username}`);
       const result = await loginUser(username, password);
+
+      logger.info(`DB login check passed. Username: ${username}`);
+      logger.info(
+        `Sending login success response to frontend. Username: ${username}`,
+      );
+
       return res.status(200).json(result); //any error in the function will be sent to the FRONTEND
     }
+
+    logger.warn(`Invalid auth action received: ${action}`);
 
     res.status(400).json({ error: "Action must be 'login' or 'register'" });
   } catch (error) {
     // Sends the "throw new Error" message back to your frontend
+
+    logger.error(
+      `Auth failed. Action: ${action}, Username: ${username}, Error: ${error.message}`,
+    );
+    logger.info(`Sending error response to frontend. Username: ${username}`);
+
     res.status(400).json({ error: error.message });
   }
 });
@@ -101,18 +134,18 @@ const connectionString = `mongodb://${REMOTE_IP}:27017/${DB_NAME}`;
 mongoose
   .connect(connectionString)
   .then(() => {
-    console.log("--- Database Connection Established ---");
-    console.log(`Connected to: ${REMOTE_IP}`);
+    logger.info("--- Database Connection Established ---");
+    logger.info(`Connected to MongoDB at: ${REMOTE_IP}`);
 
     // Start the server only after the DB is connected
     const PORT = 3000;
     const HOST = "0.0.0.0";
     app.listen(PORT, HOST, () => {
-      console.log("Server is running on http://10.0.2.5:" + PORT);
+      logger.info(`Server is running on http://10.0.2.5:${PORT}`);
     });
   })
   .catch((err) => {
-    console.error("--- Connection Failed! ---");
-    console.error("Check if the remote machine is on and port 27017 is open.");
-    console.error("Error Details:", err.message);
+    logger.error("--- Connection Failed! ---");
+    logger.error("Check if the remote machine is on and port 27017 is open.");
+    logger.error(`Error Details: ${err.message}`);
   });
