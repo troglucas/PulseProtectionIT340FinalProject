@@ -1,4 +1,5 @@
-import { inject } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+import { inject, PLATFORM_ID } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
 
 /*
@@ -7,8 +8,9 @@ If the user is not logged in, it redirects them to the login page.
 */
 export const authGuard: CanActivateFn = () => {
   const router = inject(Router);
+  const platformId = inject(PLATFORM_ID);
 
-  if (sessionStorage.getItem('isLoggedIn') === 'true') {
+  if (isPlatformBrowser(platformId) && sessionStorage.getItem('isLoggedIn') === 'true') {
     return true;
   }
 
