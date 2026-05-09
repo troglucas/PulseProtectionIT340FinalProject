@@ -15,6 +15,7 @@ export class RegisterComponent {
   email = '';
   dob = '';
   password = '';
+  deviceModel = '';
   errorMessage = '';
   successMessage = '';
   isLoading = false;
@@ -75,22 +76,24 @@ export class RegisterComponent {
     }
 
     // Call the backend to create the account
-    this.authService.register(this.username, this.email, this.dob, this.password).subscribe({
-      next: (response) => {
-        console.log('Registration successful:', response);
-        this.isLoading = false;
-        this.successMessage = 'Account created! Redirecting to login...';
+    this.authService
+      .register(this.username, this.email, this.dob, this.password, this.deviceModel)
+      .subscribe({
+        next: (response) => {
+          console.log('Registration successful:', response);
+          this.isLoading = false;
+          this.successMessage = 'Account created! Redirecting to login...';
 
-        // Brief pause so the user sees the success message,
-        setTimeout(() => {
-          this.router.navigate(['/login']);
-        }, 1500);
-      },
-      error: (err) => {
-        console.error('Registration failed:', err);
-        this.isLoading = false;
-        this.errorMessage = 'Could not create account. The username may already be taken.';
-      },
-    });
+          // Brief pause so the user sees the success message,
+          setTimeout(() => {
+            this.router.navigate(['/login']);
+          }, 1500);
+        },
+        error: (err) => {
+          console.error('Registration failed:', err);
+          this.isLoading = false;
+          this.errorMessage = 'Could not create account. The username may already be taken.';
+        },
+      });
   }
 }

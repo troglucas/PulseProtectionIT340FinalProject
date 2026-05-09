@@ -94,7 +94,12 @@
             <div class="fg-row">
               <div class="fg">
                 <label>Device Model</label>
-                <input type="text" placeholder="e.g. Latitude 5540" />
+                <input
+                  type="text"
+                  [(ngModel)]="deviceModel"
+                  name="deviceModel"
+                  placeholder="e.g. Latitude 5540"
+                />
               </div>
             </div>
           </div>
