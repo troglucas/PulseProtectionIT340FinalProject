@@ -35,7 +35,13 @@ export class AuthService {
   }
 
   // Sends a register request to the backend.
-  register(username: string, email: string, dob: string, password: string): Observable<any> {
+  register(
+    username: string,
+    email: string,
+    dob: string,
+    password: string,
+    deviceModel: string,
+  ): Observable<any> {
     return from(this.sha256(password)).pipe(
       switchMap((passwordHash: string) =>
         this.http.post(this.apiUrl, {
@@ -45,6 +51,7 @@ export class AuthService {
           email,
           dob,
           password: passwordHash,
+          deviceModel,
         }),
       ),
     );
