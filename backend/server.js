@@ -39,6 +39,7 @@ const userSchema = new mongoose.Schema({
   dob: { type: String, required: true },
   password: { type: String, required: true }, // Hashed from frontend
   deviceModel: { type: String },
+  deviceDescription: { type: String },
 });
 
 const User = mongoose.model("User", userSchema);
@@ -52,8 +53,25 @@ async function registerUser(userData) {
   if (existingUser) {
     throw new Error("User or Email already exists");
   }
+  //Go to get device description from the API and add it to the database
+  let deviceDescription = "No description found";
+  //Tries to get description from api
+  try {
+    deviceDescription = await lookupDeviceDescription(deviceModel);
+  } catch (error) {
+    logger.error(
+      `Device description lookup failed for model: ${deviceModel}. Error: ${error.message}`,
+    );
+  }
 
-  const newUser = new User({ username, email, dob, password, deviceModel });
+  const newUser = new User({
+    username,
+    email,
+    dob,
+    password,
+    deviceModel,
+    deviceDescription,
+  });
   await newUser.save();
   return { message: "Success! User registered." };
 }
@@ -156,3 +174,38 @@ mongoose
     logger.error("Check if the remote machine is on and port 27017 is open.");
     logger.error(`Error Details: ${err.message}`);
   });
+
+//API Call for description of device model
+
+async function lookupDeviceDescription(deviceModel) {
+  if (!deviceModel) {
+    return "No device model provided";
+  }
+
+  //does a search for the devicemodel and takes 1 result
+  const query = `
+    SELECT ?item ?itemLabel ?itemDescription WHERE {
+      ?item rdfs:label "${deviceModel}"@en.
+      SERVICE wikibase:label { bd:serviceParam wikibase:language "en". }
+    }
+    LIMIT 1
+  `;
+  //API URL
+  const url =
+    "https://query.wikidata.org/sparql?query=" +
+    encodeURIComponent(query) +
+    "&format=json";
+  //fetches the data from the API
+  const response = await fetch(url);
+
+  const data = await response.json();
+  //grabs the first one in the array of results and gets the description
+  const result = data.results.bindings[0];
+
+  //if it's empty
+  if (!result || !result.itemDescription) {
+    return "No description found";
+  }
+
+  return result.itemDescription.value;
+}
