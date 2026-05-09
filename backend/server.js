@@ -192,20 +192,21 @@ async function lookupDeviceDescription(deviceModel) {
   `;
   //API URL
   const url =
-    "https://query.wikidata.org/sparql?query=" +
-    encodeURIComponent(query) +
-    "&format=json";
+    "https://www.wikidata.org/w/api.php?action=wbsearchentities&search=" +
+    encodeURIComponent(deviceModel) +
+    "&language=en&format=json";
+
   //fetches the data from the API
   const response = await fetch(url);
 
   const data = await response.json();
-  //grabs the first one in the array of results and gets the description
-  const result = data.results.bindings[0];
+  //search to get the description
+  const result = data.search?.[0];
 
   //if it's empty
-  if (!result || !result.itemDescription) {
+  if (!result || !result.description) {
     return "No description found";
   }
 
-  return result.itemDescription.value;
+  return result.description;
 }
