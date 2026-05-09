@@ -38,13 +38,14 @@ const userSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   dob: { type: String, required: true },
   password: { type: String, required: true }, // Hashed from frontend
+  deviceModel: { type: String, required: true },
 });
 
 const User = mongoose.model("User", userSchema);
 
 async function registerUser(userData) {
   //Unpacking what we received from the frontend
-  const { username, email, dob, password } = userData;
+  const { username, email, dob, password, deviceModel } = userData;
 
   // Check if username or email exists
   const existingUser = await User.findOne({ $or: [{ username }, { email }] });
@@ -52,7 +53,7 @@ async function registerUser(userData) {
     throw new Error("User or Email already exists");
   }
 
-  const newUser = new User({ username, email, dob, password });
+  const newUser = new User({ username, email, dob, password, deviceModel });
   await newUser.save();
   return { message: "Success! User registered." };
 }
@@ -76,7 +77,7 @@ async function loginUser(username, password) {
 // actually enters here
 app.post(["/auth", "/api/auth"], async (req, res) => {
   //unpacks it from the frontend
-  const { action, username, password, email, dob } = req.body;
+  const { action, username, password, email, dob, deviceModel } = req.body;
 
   logger.info(
     `Auth request received from frontend. Action: ${action}, Username: ${username}`,
@@ -88,7 +89,13 @@ app.post(["/auth", "/api/auth"], async (req, res) => {
       logger.info(
         `Sending register request to DB check. Username: ${username}, Email: ${email}`,
       );
-      const result = await registerUser({ username, email, dob, password });
+      const result = await registerUser({
+        username,
+        email,
+        dob,
+        password,
+        deviceModel,
+      });
 
       logger.info(`DB register check passed. User registered: ${username}`);
       logger.info(
