@@ -1,6 +1,8 @@
 const express = require("express");
 const mongoose = require("mongoose"); /*MangoDB server*/
 const cors = require("cors"); /* To allow communication between the frontend and backend servers */
+const nodemailer = require("nodemailer"); /* For sending emails to users */
+const crypto = require("crypto"); /* For hashing muti auth token */
 const app = express();
 
 /*Used for logs*/
@@ -43,6 +45,36 @@ const userSchema = new mongoose.Schema({
 });
 
 const User = mongoose.model("User", userSchema);
+
+const mfaCodes = new Map(); // Map to store MFA codes for users its like a dictionary
+function generateMfaCode() {
+  return crypto.randomInt(10000, 100000).toString(); // Generate a random 5-digit code
+}
+
+// Set up nodemailer transporter (using Mailtrap for testing)
+const emailTransporter = nodemailer.createTransport({
+  host: "sandbox.smtp.mailtrap.io",
+  port: 2525,
+  auth: {
+    user: "308321c35f6d8f",
+    pass: "9d980a7a4812d9",
+  },
+});
+
+//Actually sends the email to the user with the code
+async function sendMfaEmail(toEmail, code) {
+  await emailTransporter.sendMail({
+    from: '"Pulse Protection" <no-reply@pulse.local>',
+    to: toEmail,
+    subject: "Your Pulse Protection login code",
+    text: `Your login code is ${code}. It expires in 5 minutes.`,
+  });
+}
+
+//Used to hasd the mfa code
+function hashCode(code) {
+  return crypto.createHash("sha256").update(code).digest("hex");
+}
 
 async function registerUser(userData) {
   //Unpacking what we received from the frontend
@@ -89,20 +121,21 @@ async function loginUser(username, password) {
     throw new Error("Invalid credentials");
   }
 
-  return { message: "Login successful", user: user.username };
+  return { username: user.username, email: user.email };
 }
 
 // actually enters here
 app.post(["/auth", "/api/auth"], async (req, res) => {
   //unpacks it from the frontend
-  const { action, username, password, email, dob, deviceModel } = req.body;
+  const { action, username, password, email, dob, deviceModel, code } =
+    req.body;
 
   logger.info(
     `Auth request received from frontend. Action: ${action}, Username: ${username}`,
   );
 
   try {
-    // these call the functions above for login or registeration
+    // these call the functions above for login or registeration or  verifyMfa
     if (action === "register") {
       logger.info(
         `Sending register request to DB check. Username: ${username}, Email: ${email}`,
@@ -125,19 +158,65 @@ app.post(["/auth", "/api/auth"], async (req, res) => {
 
     if (action === "login") {
       logger.info(`Sending login request to DB check. Username: ${username}`);
-      const result = await loginUser(username, password);
+      const user = await loginUser(username, password);
+
+      //Generate Code and store it in the map with the username as the key
+      const mfacode = generateMfaCode();
+      // Generates the code but makes it expire in 5 min
+      mfaCodes.set(username, {
+        codeHash: hashCode(mfacode),
+        expiresAt: Date.now() + 5 * 60 * 1000, // 5 minutes from now,
+        attempts: 0,
+      });
+
+      await sendMfaEmail(user.email, mfacode); //Sends the email to the user with the code
 
       logger.info(`DB login check passed. Username: ${username}`);
-      logger.info(
-        `Sending login success response to frontend. Username: ${username}`,
-      );
 
-      return res.status(200).json(result); //any error in the function will be sent to the FRONTEND
+      return res.status(200).json({
+        mfaRequired: true,
+        message:
+          "A 5 digit code has been sent to your email. Please enter it to complete login.",
+        username: user.username,
+      });
+    } //any error in the function will be sent to the FRONTEND
+
+    //MFA code vefication
+    if (action === "verifyMfa") {
+      const savedCode = mfaCodes.get(username);
+
+      if (!savedCode) {
+        throw new Error("No MFA code found. Please login again.");
+      }
+
+      if (Date.now() > savedCode.expiresAt) {
+        mfaCodes.delete(username);
+        throw new Error("MFA code expired. Please login again.");
+      }
+
+      if (savedCode.attempts >= 5) {
+        mfaCodes.delete(username);
+        throw new Error("Too many incorrect attempts. Please login again.");
+      }
+
+      if (savedCode.codeHash !== hashCode(code)) {
+        savedCode.attempts += 1;
+        throw new Error("Invalid MFA code.");
+      }
+
+      mfaCodes.delete(username); // Code is valid, remove it from the map
+
+      logger.info(`MFA verification successful. Username: ${username}`);
+      return res
+        .status(200)
+        .json({ message: "Login successful!", user: username });
     }
 
     logger.warn(`Invalid auth action received: ${action}`);
 
-    res.status(400).json({ error: "Action must be 'login' or 'register'" });
+    res
+      .status(400)
+      .json({ error: "Action must be 'login' or 'register' or 'verifyMfa'" });
   } catch (error) {
     // Sends the "throw new Error" message back to your frontend
 
