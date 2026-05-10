@@ -30,8 +30,14 @@
   <div class="auth-screen">
     <div class="auth-card">
       <div class="auth-head">
-        <h2>Sign In</h2>
-        <p>Access your Pulse Protection workspace</p>
+        <h2>{{ mfaRequired ? 'Verify Login' : 'Sign In' }}</h2>
+        <p>
+          {{
+            mfaRequired
+              ? 'Enter the code sent to your email'
+              : 'Access your Pulse Protection workspace'
+          }}
+        </p>
       </div>
       <div class="auth-body">
         <div *ngIf="!mfaRequired">
@@ -52,7 +58,7 @@
           </div>
 
           <button class="btn btn-primary btn-block" (click)="onLogin()" [disabled]="isLoading">
-            Sign In
+            {{ isLoading ? 'Sending code...' : 'Sign In' }}
           </button>
         </div>
 
