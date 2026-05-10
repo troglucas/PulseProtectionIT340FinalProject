@@ -34,6 +34,15 @@ export class AuthService {
     );
   }
 
+  // Sends an MFA verification request to the backend.
+  verifyMfa(username: string, code: string): Observable<any> {
+    return this.http.post(this.apiUrl, {
+      action: 'verifyMfa',
+      username,
+      code,
+    });
+  }
+
   // Sends a register request to the backend.
   register(
     username: string,

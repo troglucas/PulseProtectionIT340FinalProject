@@ -13,6 +13,9 @@ import { AuthService } from '../../services/auth.service';
 export class LoginComponent {
   username = '';
   password = '';
+  mfaCode = '';
+  mfaRequired = false;
+  mfaMessage = '';
   errorMessage = '';
   isLoading = false;
 
@@ -42,6 +45,13 @@ export class LoginComponent {
     // Call the AuthService, which sends the request to the backend
     this.authService.login(this.username, this.password).subscribe({
       next: (response) => {
+        if (response.mfaRequired) {
+          this.mfaRequired = true;
+          this.mfaMessage = response.message;
+          this.isLoading = false;
+          return;
+        }
+
         // Backend returned a successful response — route to the dashboard
         console.log('Login successful:', response);
 
@@ -58,6 +68,32 @@ export class LoginComponent {
         console.error('Login failed:', err);
         this.isLoading = false;
         this.errorMessage = 'Invalid username or password.';
+      },
+    });
+  }
+
+  onVerifyMfa() {
+    this.errorMessage = '';
+    this.isLoading = true;
+
+    if (!/^\d{5}$/.test(this.mfaCode)) {
+      this.errorMessage = 'Enter the 5 digit code from your email.';
+      this.isLoading = false;
+      return;
+    }
+
+    this.authService.verifyMfa(this.username, this.mfaCode).subscribe({
+      next: () => {
+        sessionStorage.setItem('isLoggedIn', 'true');
+        sessionStorage.setItem('username', this.username);
+
+        this.isLoading = false;
+        this.router.navigate(['/dashboard']);
+      },
+      error: (err) => {
+        console.error('MFA verification failed:', err);
+        this.isLoading = false;
+        this.errorMessage = err.error?.error || 'Invalid MFA code.';
       },
     });
   }
