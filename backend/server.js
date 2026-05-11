@@ -37,6 +37,7 @@ const userSchema = new mongoose.Schema({
 
 const User = mongoose.model("User", userSchema);
 
+
 async function registerUser(userData) {
   //Unpacking what we received from the frontend
   const { username, email, dob, password } = userData;
@@ -91,6 +92,33 @@ app.post(["/auth", "/api/auth"], async (req, res) => {
     res.status(400).json({ error: error.message });
   }
 });
+
+
+//Backend: Delete ticket request for admin privileges
+// Middleware to check if a user is an Admin 
+const isAdmin = (req, res, next) => { 
+const { role } = req.body; // In production, get this from a secure JWT token 
+if (role !== 'admin') { 
+return res.status(403).json({ error: "Access Denied: Admins only" }); } 
+next(); };
+
+
+//deleting solved tickets
+// Admin only: Delete solved tickets
+app.delete("/tickets/:id", isAdmin, async (req, res) => {
+  try {
+    const ticket = await Ticket.findById(req.params.id);
+    if (ticket.status !== 'completed') {
+      return res.status(400).json({ error: "Only completed tickets can be deleted" });
+    }
+    await Ticket.findByIdAndDelete(req.params.id);
+    res.json({ message: "Ticket deleted by Admin" });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+
 
 // connecting to MangoDB server
 
