@@ -40,11 +40,28 @@ const userSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   dob: { type: String, required: true },
   password: { type: String, required: true }, // Hashed from frontend
+  role: { type: String, enum: ["user", "it", "admin"], default: "user" },
   deviceModel: { type: String },
   deviceDescription: { type: String },
 });
 
 const User = mongoose.model("User", userSchema);
+
+const ticketSchema = new mongoose.Schema({
+  subject: { type: String, required: true },
+  description: { type: String, required: true },
+  status: {
+    type: String,
+    enum: ["open", "inprogress", "resolved", "completed"],
+    default: "open",
+  },
+  owner: { type: String, required: true },
+  assignedTo: { type: String },
+  createdAt: { type: Date, default: Date.now },
+  updatedAt: { type: Date, default: Date.now },
+});
+
+const Ticket = mongoose.model("Ticket", ticketSchema);
 
 const mfaCodes = new Map(); // Map to store MFA codes for users its like a dictionary
 function generateMfaCode() {
@@ -78,7 +95,7 @@ function hashCode(code) {
 
 async function registerUser(userData) {
   //Unpacking what we received from the frontend
-  const { username, email, dob, password, deviceModel } = userData;
+  const { username, email, dob, password, deviceModel, role } = userData;
 
   // Check if username or email exists
   const existingUser = await User.findOne({ $or: [{ username }, { email }] });
@@ -101,6 +118,7 @@ async function registerUser(userData) {
     email,
     dob,
     password,
+    role: ["user", "it", "admin"].includes(role) ? role : "user",
     deviceModel,
     deviceDescription,
   });
@@ -121,13 +139,13 @@ async function loginUser(username, password) {
     throw new Error("Invalid credentials");
   }
 
-  return { username: user.username, email: user.email };
+  return { username: user.username, email: user.email, role: user.role || "user" };
 }
 
 // actually enters here
 app.post(["/auth", "/api/auth"], async (req, res) => {
   //unpacks it from the frontend
-  const { action, username, password, email, dob, deviceModel, code } =
+  const { action, username, password, email, dob, deviceModel, role, code } =
     req.body;
 
   logger.info(
@@ -146,6 +164,7 @@ app.post(["/auth", "/api/auth"], async (req, res) => {
         dob,
         password,
         deviceModel,
+        role,
       });
 
       logger.info(`DB register check passed. User registered: ${username}`);
@@ -167,6 +186,7 @@ app.post(["/auth", "/api/auth"], async (req, res) => {
         codeHash: hashCode(mfacode),
         expiresAt: Date.now() + 5 * 60 * 1000, // 5 minutes from now,
         attempts: 0,
+        role: user.role,
       });
 
       await sendMfaEmail(user.email, mfacode); //Sends the email to the user with the code
@@ -209,7 +229,12 @@ app.post(["/auth", "/api/auth"], async (req, res) => {
       logger.info(`MFA verification successful. Username: ${username}`);
       return res
         .status(200)
-        .json({ message: "Login successful!", user: username });
+        .json({
+          message: "Login successful!",
+          username,
+          user: username,
+          role: savedCode.role || "user",
+        });
     }
 
     logger.warn(`Invalid auth action received: ${action}`);
@@ -226,6 +251,126 @@ app.post(["/auth", "/api/auth"], async (req, res) => {
     logger.info(`Sending error response to frontend. Username: ${username}`);
 
     res.status(400).json({ error: error.message });
+  }
+});
+
+function getRequester(req) {
+  return {
+    username: req.headers["x-username"] || req.body.username || "",
+    role: req.headers["x-role"] || req.body.role || "",
+  };
+}
+
+const isLoggedIn = (req, res, next) => {
+  const { username, role } = getRequester(req);
+  if (!username || !role) {
+    return res.status(401).json({ error: "Login required" });
+  }
+  req.user = { username, role };
+  next();
+};
+
+const isAdmin = (req, res, next) => {
+  const { role } = getRequester(req);
+  if (role !== "admin") {
+    return res.status(403).json({ error: "Access Denied: Admins only" });
+  }
+  req.user = getRequester(req);
+  next();
+};
+
+app.get("/api/tickets", isLoggedIn, async (req, res) => {
+  try {
+    const { username, role } = req.user;
+    const query = role === "admin" || role === "it" ? {} : { owner: username };
+    const tickets = await Ticket.find(query).sort({ createdAt: -1 });
+    res.json(tickets);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.get("/api/tickets/assigned", isLoggedIn, async (req, res) => {
+  try {
+    const tickets = await Ticket.find({ assignedTo: req.user.username }).sort({
+      createdAt: -1,
+    });
+    res.json(tickets);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post("/api/tickets", isLoggedIn, async (req, res) => {
+  try {
+    if (req.user.role !== "user") {
+      return res.status(403).json({ error: "Only users can create tickets" });
+    }
+
+    const { subject, description } = req.body;
+    const ticket = new Ticket({
+      subject,
+      description,
+      owner: req.user.username,
+    });
+
+    await ticket.save();
+    res.status(201).json(ticket);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.patch("/api/tickets/:id", isLoggedIn, async (req, res) => {
+  try {
+    if (req.user.role !== "it") {
+      return res
+        .status(403)
+        .json({ error: "Only IT assistants can update ticket state" });
+    }
+
+    const update = {
+      status: req.body.state,
+      updatedAt: new Date(),
+    };
+
+    if (req.body.state === "inprogress") {
+      update.assignedTo = req.user.username;
+    }
+
+    const ticket = await Ticket.findByIdAndUpdate(req.params.id, update, {
+      new: true,
+      runValidators: true,
+    });
+
+    if (!ticket) {
+      return res.status(404).json({ error: "Ticket not found" });
+    }
+
+    res.json(ticket);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Admin only: Delete solved tickets
+app.delete(["/tickets/:id", "/api/tickets/:id"], isAdmin, async (req, res) => {
+  try {
+    const ticket = await Ticket.findById(req.params.id);
+    if (!ticket) {
+      return res.status(404).json({ error: "Ticket not found" });
+    }
+
+    if (ticket.status !== "completed" && ticket.status !== "resolved") {
+      return res
+        .status(400)
+        .json({ error: "Only completed or resolved tickets can be deleted" });
+    }
+
+    await Ticket.findByIdAndDelete(req.params.id);
+    res.json({ message: "Ticket deleted by Admin" });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 });
 

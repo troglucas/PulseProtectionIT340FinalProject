@@ -77,7 +77,7 @@ export class RegisterComponent {
 
     // Call the backend to create the account
     this.authService
-      .register(this.username, this.email, this.dob, this.password, this.deviceModel)
+      .register(this.username, this.email, this.dob, this.password, this.deviceModel, this.role)
       .subscribe({
         next: (response) => {
           console.log('Registration successful:', response);

@@ -1,17 +1,24 @@
-import { Injectable } from '@angular/core';
+import { Injectable, PLATFORM_ID, Inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, from } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
+import { isPlatformBrowser } from '@angular/common';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-  // Base URL of Joseph's backend server. Double check if it's the correct one!
-  private apiUrl = 'http://10.0.2.5:3000/auth'; //back end ip and port
+  private apiUrl = 'http://10.0.2.5:3000/auth';
 
-  constructor(private http: HttpClient) {}
-  // hashing algohrithim for password security
+  constructor(
+    private http: HttpClient,
+    @Inject(PLATFORM_ID) private platformId: Object,
+  ) {}
+
+  private isBrowser(): boolean {
+    return isPlatformBrowser(this.platformId);
+  }
+
   private async sha256(input: string): Promise<string> {
     const data = new TextEncoder().encode(input);
     const hashBuffer = await crypto.subtle.digest('SHA-256', data);
@@ -20,12 +27,10 @@ export class AuthService {
       .join('');
   }
 
-  // Sends a login request to the backend.
   login(username: string, password: string): Observable<any> {
     return from(this.sha256(password)).pipe(
       switchMap((passwordHash: string) =>
         this.http.post(this.apiUrl, {
-          // to match with server {action, username, password}
           action: 'login',
           username,
           password: passwordHash,
@@ -34,7 +39,6 @@ export class AuthService {
     );
   }
 
-  // Sends an MFA verification request to the backend.
   verifyMfa(username: string, code: string): Observable<any> {
     return this.http.post(this.apiUrl, {
       action: 'verifyMfa',
@@ -43,26 +47,55 @@ export class AuthService {
     });
   }
 
-  // Sends a register request to the backend.
   register(
     username: string,
     email: string,
     dob: string,
     password: string,
     deviceModel: string,
+    role: string,
   ): Observable<any> {
     return from(this.sha256(password)).pipe(
       switchMap((passwordHash: string) =>
         this.http.post(this.apiUrl, {
-          // to match with server {action, username, email, dob, password}
           action: 'register',
           username,
           email,
           dob,
           password: passwordHash,
           deviceModel,
+          role,
         }),
       ),
     );
+  }
+
+  completeLogin(username: string, role: string): void {
+    if (this.isBrowser()) {
+      sessionStorage.setItem('isLoggedIn', 'true');
+      sessionStorage.setItem('username', username);
+      sessionStorage.setItem('role', role || 'user');
+    }
+  }
+
+  getRole(): string {
+    if (this.isBrowser()) return sessionStorage.getItem('role') || '';
+    return '';
+  }
+
+  getUsername(): string {
+    if (this.isBrowser()) return sessionStorage.getItem('username') || '';
+    return '';
+  }
+
+  isLoggedIn(): boolean {
+    if (this.isBrowser()) return sessionStorage.getItem('isLoggedIn') === 'true';
+    return false;
+  }
+
+  logout(): void {
+    if (this.isBrowser()) {
+      sessionStorage.clear();
+    }
   }
 }
