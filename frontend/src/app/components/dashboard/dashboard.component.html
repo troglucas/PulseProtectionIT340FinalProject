@@ -16,8 +16,8 @@
       </button>
 
       <ng-container *ngIf="isUser()">
-        <button class="nav-item">
-          <span class="nav-icon">T</span> My Tickets
+        <button class="nav-item" (click)="goTo('/my-tickets')">
+          <span class="nav-icon">T</span> My Ticket
         </button>
         <button class="nav-item" (click)="goTo('/new-ticket')">
           <span class="nav-icon">+</span> New Ticket

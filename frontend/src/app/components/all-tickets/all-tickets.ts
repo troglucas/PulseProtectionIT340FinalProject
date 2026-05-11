@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { TicketService } from '../../services/ticket.service';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-all-tickets',
@@ -14,11 +15,29 @@ export class AllTicketsComponent implements OnInit {
   tickets: any[] = [];
   errorMessage: string = '';
   isLoading: boolean = true;
+  role: string = '';
 
-  constructor(private ticketService: TicketService, private router: Router) {}
+  constructor(
+    private ticketService: TicketService,
+    private authService: AuthService,
+    private router: Router,
+  ) {}
 
   ngOnInit(): void {
+    this.role = this.authService.getRole();
     this.loadAllTickets();
+  }
+
+  isAdmin(): boolean {
+    return this.role === 'admin';
+  }
+
+  getPageTitle(): string {
+    return this.isAdmin() ? 'All Tickets' : 'My Ticket';
+  }
+
+  getPageSubtitle(): string {
+    return this.isAdmin() ? 'Admin view' : 'Your submitted tickets';
   }
 
   loadAllTickets(): void {
@@ -35,6 +54,10 @@ export class AllTicketsComponent implements OnInit {
   }
 
   deleteTicket(ticketId: string): void {
+    if (!this.isAdmin()) {
+      return;
+    }
+
     this.ticketService.deleteTicket(ticketId).subscribe({
       next: (response: any) => {
         this.loadAllTickets();

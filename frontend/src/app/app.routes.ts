@@ -12,6 +12,7 @@ export const routes: Routes = [
   { path: 'register', component: RegisterComponent },
   { path: 'dashboard', component: DashboardComponent, canActivate: [authGuard] },
   { path: 'new-ticket', component: NewTicketComponent, canActivate: [authGuard] },
+  { path: 'my-tickets', component: AllTicketsComponent, canActivate: [authGuard] },
   { path: 'ticket-queue', component: TicketQueueComponent, canActivate: [authGuard] },
   { path: 'all-tickets', component: AllTicketsComponent, canActivate: [authGuard] },
   { path: '', redirectTo: '/login', pathMatch: 'full' },

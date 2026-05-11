@@ -9,23 +9,23 @@
     <nav class="sidebar-nav">
       <div class="nav-section-label">Main Menu</div>
       <button class="nav-item" (click)="goBack()">
-        <span class="nav-icon">📊</span> Dashboard
+        <span class="nav-icon">▣</span> Dashboard
       </button>
       <button class="nav-item active">
-        <span class="nav-icon">🎫</span> All Tickets
+        <span class="nav-icon">T</span> {{ getPageTitle() }}
       </button>
     </nav>
   </aside>
 
   <main class="main">
     <div class="topbar">
-      <div class="topbar-title">All Tickets</div>
+      <div class="topbar-title">{{ getPageTitle() }}</div>
     </div>
 
     <div class="page-body">
       <div class="table-card">
         <div class="table-card-head">
-          <div class="table-card-title">All Tickets <span>Admin view</span></div>
+          <div class="table-card-title">{{ getPageTitle() }} <span>{{ getPageSubtitle() }}</span></div>
         </div>
 
         <div *ngIf="isLoading" style="padding: 24px;">Loading tickets...</div>
@@ -38,7 +38,7 @@
               <th>Subject</th>
               <th>Status</th>
               <th>Created</th>
-              <th>Action</th>
+              <th *ngIf="isAdmin()">Action</th>
             </tr>
           </thead>
           <tbody>
@@ -51,7 +51,7 @@
                 </span>
               </td>
               <td>{{ ticket.createdAt | date }}</td>
-              <td>
+              <td *ngIf="isAdmin()">
                 <button
                   (click)="deleteTicket(ticket._id)"
                   style="padding: 6px 14px; background: #ff4444; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">
@@ -60,7 +60,7 @@
               </td>
             </tr>
             <tr *ngIf="tickets.length === 0">
-              <td colspan="5" style="text-align:center; padding: 24px;">No tickets found.</td>
+              <td [attr.colspan]="isAdmin() ? 5 : 4" style="text-align:center; padding: 24px;">No tickets found.</td>
             </tr>
           </tbody>
         </table>
