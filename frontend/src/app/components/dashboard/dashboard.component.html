@@ -8,52 +8,48 @@
       <div class="sidebar-role">Logged in as <span>{{ role }}</span></div>
     </div>
 
-    <nav class="sidebar-nav">
-      <div class="nav-section-label">Main Menu</div>
+<nav class="sidebar-nav">
+  <div class="nav-section-label">Main Menu</div>
 
-      <!-- Shown to ALL roles -->
-      <button class="nav-item active">
-        <span class="nav-icon">📊</span> Dashboard
-      </button>
+  <button class="nav-item active">
+    <span class="nav-icon">📊</span> Dashboard
+  </button>
 
-      <!-- User only -->
-      <ng-container *ngIf="isUser()">
-        <button class="nav-item">
-          <span class="nav-icon">🎫</span> My Tickets
-        </button>
-        <button class="nav-item">
-          <span class="nav-icon">➕</span> New Ticket
-        </button>
-      </ng-container>
+  <ng-container *ngIf="isUser()">
+    <button class="nav-item">
+      <span class="nav-icon">🎫</span> My Tickets
+    </button>
+    <button class="nav-item">
+      <span class="nav-icon">➕</span> New Ticket
+    </button>
+  </ng-container>
 
-      <!-- IT Assistant only -->
-      <ng-container *ngIf="isITAssistant()">
-        <button class="nav-item">
-          <span class="nav-icon">📋</span> Ticket Queue
-        </button>
-        <button class="nav-item">
-          <span class="nav-icon">🎫</span> My Assigned Tickets
-        </button>
-      </ng-container>
+  <ng-container *ngIf="isITAssistant()">
+    <button class="nav-item">
+      <span class="nav-icon">📋</span> Ticket Queue
+    </button>
+    <button class="nav-item">
+      <span class="nav-icon">🎫</span> My Assigned Tickets
+    </button>
+  </ng-container>
 
-      <!-- Admin only -->
-      <ng-container *ngIf="isAdmin()">
-        <button class="nav-item">
-          <span class="nav-icon">👥</span> Manage Accounts
-        </button>
-        <button class="nav-item">
-          <span class="nav-icon">🎫</span> All Tickets
-        </button>
-        <button class="nav-item">
-          <span class="nav-icon">➕</span> Create IT Assistant
-        </button>
-      </ng-container>
+  <ng-container *ngIf="isAdmin()">
+    <button class="nav-item">
+      <span class="nav-icon">👥</span> Manage Accounts
+    </button>
+    <button class="nav-item">
+      <span class="nav-icon">🎫</span> All Tickets
+    </button>
+    <button class="nav-item">
+      <span class="nav-icon">➕</span> Create IT Assistant
+    </button>
+  </ng-container>
 
-      <div class="nav-section-label">Account</div>
-      <button class="nav-item">
-        <span class="nav-icon">⚙️</span> Settings
-      </button>
-    </nav>
+  <div class="nav-section-label">Account</div>
+  <button class="nav-item">
+    <span class="nav-icon">⚙️</span> Settings
+  </button>
+</nav>
 
     <div class="sidebar-foot">
       <div class="user-chip">
