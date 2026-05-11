@@ -13,3 +13,40 @@
 [2026-05-08T17:19:43.703Z] INFO: Sending login request to DB check. Username: disasrer
 [2026-05-08T17:19:43.721Z] ERROR: Auth failed. Action: login, Username: disasrer, Error: User not found
 [2026-05-08T17:19:43.723Z] INFO: Sending error response to frontend. Username: disasrer
+[2026-05-09T23:20:34.581Z] INFO: --- Database Connection Established ---
+[2026-05-09T23:20:34.583Z] INFO: Connected to MongoDB at: 10.0.2.7
+[2026-05-09T23:20:34.595Z] INFO: Server is running on http://10.0.2.5:3000
+[2026-05-10T22:08:35.234Z] INFO: --- Database Connection Established ---
+[2026-05-10T22:08:35.241Z] INFO: Connected to MongoDB at: 10.0.2.7
+[2026-05-10T22:08:35.253Z] INFO: Server is running on http://10.0.2.5:3000
+[2026-05-10T22:09:21.642Z] INFO: Auth request received from frontend. Action: login, Username: crater
+[2026-05-10T22:09:21.642Z] INFO: Sending login request to DB check. Username: crater
+[2026-05-10T22:09:22.065Z] INFO: DB login check passed. Username: crater
+[2026-05-10T22:09:58.583Z] INFO: Auth request received from frontend. Action: verifyMfa, Username: crater
+[2026-05-10T22:09:58.583Z] INFO: MFA verification successful. Username: crater
+[2026-05-10T22:14:03.468Z] INFO: Auth request received from frontend. Action: register, Username: sunshine
+[2026-05-10T22:14:03.471Z] INFO: Sending register request to DB check. Username: sunshine, Email: rocker@gmail.com
+[2026-05-10T22:14:03.814Z] INFO: DB register check passed. User registered: sunshine
+[2026-05-10T22:14:03.823Z] INFO: Sending register success response to frontend. Username: sunshine
+[2026-05-10T22:19:46.533Z] INFO: Auth request received from frontend. Action: login, Username: crater
+[2026-05-10T22:19:46.535Z] INFO: Sending login request to DB check. Username: crater
+[2026-05-10T22:19:46.863Z] INFO: DB login check passed. Username: crater
+[2026-05-10T22:23:20.224Z] INFO: Auth request received from frontend. Action: login, Username: rocket
+[2026-05-10T22:23:20.234Z] INFO: Sending login request to DB check. Username: rocket
+[2026-05-10T22:23:20.515Z] INFO: DB login check passed. Username: rocket
+[2026-05-10T22:29:20.552Z] INFO: Auth request received from frontend. Action: login, Username: rocket
+[2026-05-10T22:29:20.561Z] INFO: Sending login request to DB check. Username: rocket
+[2026-05-10T22:29:20.893Z] INFO: DB login check passed. Username: rocket
+[2026-05-10T22:43:02.084Z] INFO: Auth request received from frontend. Action: login, Username: crater
+[2026-05-10T22:43:02.095Z] INFO: Sending login request to DB check. Username: crater
+[2026-05-10T22:43:02.512Z] INFO: DB login check passed. Username: crater
+[2026-05-10T22:43:19.427Z] INFO: Auth request received from frontend. Action: verifyMfa, Username: crater
+[2026-05-10T22:43:19.442Z] INFO: MFA verification successful. Username: crater
+[2026-05-11T18:33:06.316Z] INFO: --- Database Connection Established ---
+[2026-05-11T18:33:06.324Z] INFO: Connected to MongoDB at: 10.0.2.7
+[2026-05-11T18:33:06.352Z] INFO: Server is running on http://10.0.2.5:3000
+[2026-05-11T18:35:09.815Z] INFO: Auth request received from frontend. Action: login, Username: crater
+[2026-05-11T18:35:09.825Z] INFO: Sending login request to DB check. Username: crater
+[2026-05-11T18:35:10.399Z] INFO: DB login check passed. Username: crater
+[2026-05-11T18:35:52.574Z] INFO: Auth request received from frontend. Action: verifyMfa, Username: crater
+[2026-05-11T18:35:52.585Z] INFO: MFA verification successful. Username: crater
