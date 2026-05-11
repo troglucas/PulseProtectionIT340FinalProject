@@ -26,8 +26,9 @@ app.use(
         return callback(null, true);
       return callback(new Error("Not allowed by CORS"));
     },
-    methods: ["GET", "POST", "OPTIONS"],
-    allowedHeaders: ["Content-Type"],
+    //Addtion of ticket headers
+    methods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "x-username", "x-role"],
   }),
 );
 
@@ -139,7 +140,11 @@ async function loginUser(username, password) {
     throw new Error("Invalid credentials");
   }
 
-  return { username: user.username, email: user.email, role: user.role || "user" };
+  return {
+    username: user.username,
+    email: user.email,
+    role: user.role || "user",
+  };
 }
 
 // actually enters here
@@ -227,14 +232,12 @@ app.post(["/auth", "/api/auth"], async (req, res) => {
       mfaCodes.delete(username); // Code is valid, remove it from the map
 
       logger.info(`MFA verification successful. Username: ${username}`);
-      return res
-        .status(200)
-        .json({
-          message: "Login successful!",
-          username,
-          user: username,
-          role: savedCode.role || "user",
-        });
+      return res.status(200).json({
+        message: "Login successful!",
+        username,
+        user: username,
+        role: savedCode.role || "user",
+      });
     }
 
     logger.warn(`Invalid auth action received: ${action}`);
