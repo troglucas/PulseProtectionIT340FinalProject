@@ -1,0 +1,95 @@
+<div id="v-login" class="view active">
+  <div
+    style="
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 40px;
+      height: 60px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(10, 13, 20, 0.85);
+      backdrop-filter: blur(12px);
+      position: relative;
+      z-index: 1;
+    "
+  >
+    <div class="logo">
+      <div class="logo-icon">✓</div>
+      <div class="logo-text">Pulse <span>Protection</span></div>
+    </div>
+    <div style="font-size: 13px; color: var(--text2)">
+      No account?
+      <a
+        routerLink="/register"
+        style="color: var(--accent); cursor: pointer; font-weight: 600; text-decoration: none"
+        >Register here</a
+      >
+    </div>
+  </div>
+
+  <div class="auth-screen">
+    <div class="auth-card">
+      <div class="auth-head">
+        <h2>{{ mfaRequired ? 'Verify Login' : 'Sign In' }}</h2>
+        <p>
+          {{
+            mfaRequired
+              ? 'Enter the code sent to your email'
+              : 'Access your Pulse Protection workspace'
+          }}
+        </p>
+      </div>
+      <div class="auth-body">
+        <div *ngIf="!mfaRequired">
+          <div class="fg">
+            <label>Username</label>
+            <input type="text" [(ngModel)]="username" placeholder="Enter your username" />
+          </div>
+
+          <div *ngIf="errorMessage" style="margin-top: 10px; color: #ff6b6b; font-size: 13px">
+            {{ errorMessage }}
+          </div>
+
+          <div class="fg">
+            <label>Password</label>
+            <div class="pass-wrap">
+              <input type="password" [(ngModel)]="password" placeholder="Enter your password" />
+            </div>
+          </div>
+
+          <button class="btn btn-primary btn-block" (click)="onLogin()" [disabled]="isLoading">
+            {{ isLoading ? 'Sending code...' : 'Sign In' }}
+          </button>
+        </div>
+
+        <div *ngIf="mfaRequired">
+          <div class="info-banner">
+            <p>{{ mfaMessage }}</p>
+          </div>
+
+          <div *ngIf="errorMessage" style="margin-top: 10px; color: #ff6b6b; font-size: 13px">
+            {{ errorMessage }}
+          </div>
+
+          <div class="fg">
+            <label>Verification Code</label>
+            <input
+              type="text"
+              [(ngModel)]="mfaCode"
+              maxlength="5"
+              placeholder="Enter 5 digit code"
+            />
+          </div>
+
+          <button class="btn btn-primary btn-block" (click)="onVerifyMfa()" [disabled]="isLoading">
+            Verify Code
+          </button>
+        </div>
+      </div>
+
+      <div class="auth-foot">
+        Don't have an account? <a routerLink="/register">Register here</a>
+      </div>
+    </div>
+  </div>
+</div>

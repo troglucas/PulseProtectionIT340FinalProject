@@ -1,0 +1,28 @@
+<div class="page-header">
+  <h1 class="page-title">New Support Request</h1>
+  <p class="page-subtitle">Submit details about your hardware or software issue.</p>
+</div>
+
+<div class="card form-container">
+  <form (submit)="onSubmit()">
+    <div class="input-group">
+      <label>Issue Subject</label>
+      <input type="text" [(ngModel)]="ticket.subject" name="subject" placeholder="e.g. Printer not connecting" required />
+    </div>
+
+    <div class="input-group">
+      <label>Hardware Specifications</label>
+      <input type="text" [(ngModel)]="ticket.hardwareSpecs" name="hardwareSpecs" placeholder="e.g. Dell Latitude 5420, Windows 11" required />
+    </div>
+
+    <div class="input-group">
+      <label>Detailed Description</label>
+      <textarea [(ngModel)]="ticket.description" name="description" rows="5" placeholder="Please provide as much detail as possible..." required></textarea>
+    </div>
+
+    <div class="form-actions">
+      <button type="button" class="btn-secondary" (click)="onCancel()">Cancel</button>
+      <button type="submit" class="btn-primary">Submit Ticket</button>
+    </div>
+  </form>
+</div>

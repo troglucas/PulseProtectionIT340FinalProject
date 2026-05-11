@@ -1,0 +1,70 @@
+<div class="app-layout">
+  <aside class="sidebar">
+    <div class="sidebar-head">
+      <div class="logo">
+        <div class="logo-icon">✓</div>
+        <div class="logo-text">Pulse <span>Protection</span></div>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">Main Menu</div>
+      <button class="nav-item" (click)="goBack()">
+        <span class="nav-icon">▣</span> Dashboard
+      </button>
+      <button class="nav-item active">
+        <span class="nav-icon">T</span> {{ getPageTitle() }}
+      </button>
+    </nav>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <div class="topbar-title">{{ getPageTitle() }}</div>
+    </div>
+
+    <div class="page-body">
+      <div class="table-card">
+        <div class="table-card-head">
+          <div class="table-card-title">{{ getPageTitle() }} <span>{{ getPageSubtitle() }}</span></div>
+        </div>
+
+        <div *ngIf="isLoading" style="padding: 24px;">Loading tickets...</div>
+        <div *ngIf="errorMessage" style="padding: 24px; color: red;">{{ errorMessage }}</div>
+
+        <table *ngIf="!isLoading">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Subject</th>
+              <th>Status</th>
+              <th>Created</th>
+              <th *ngIf="isAdmin()">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let ticket of tickets">
+              <td class="tid">{{ ticket._id }}</td>
+              <td>{{ ticket.subject }}</td>
+              <td>
+                <span [class]="'badge ' + getStatusBadge(ticket.status)">
+                  {{ ticket.status }}
+                </span>
+              </td>
+              <td>{{ ticket.createdAt | date }}</td>
+              <td *ngIf="isAdmin()">
+                <button
+                  (click)="deleteTicket(ticket._id)"
+                  style="padding: 6px 14px; background: #ff4444; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">
+                  Delete
+                </button>
+              </td>
+            </tr>
+            <tr *ngIf="tickets.length === 0">
+              <td [attr.colspan]="isAdmin() ? 5 : 4" style="text-align:center; padding: 24px;">No tickets found.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+</div>
